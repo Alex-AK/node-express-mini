@@ -24,7 +24,7 @@ server.get('/api/users/:id', (req, res) => {
   db.findById(id)
     .then(user => {
       if (!user) {
-        res.status(404).json({
+        return res.status(404).json({
           success: false,
           error: 'The user information could not be retrieved.'
         });
@@ -45,7 +45,7 @@ server.post('/api/users', (req, res) => {
   const { name, bio } = req.body;
 
   if (!name || !bio) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       errorMessage: 'Please provide name and bio for the user.'
     });
@@ -69,19 +69,53 @@ server.delete('/api/users/:id', (req, res) => {
   db.remove(id)
     .then(user => {
       if (!user) {
-        res.status(404).json({
+        return res.status(404).json({
           success: false,
           message: 'The user with the specified ID does not exist.'
         });
       }
       res
         .status(200)
-        .json({ success: true, message: 'resource updated successfully' });
+        .json({ success: true, message: 'The user was deleted successfully' });
     })
     .catch(err =>
       res.status(500).json({
         success: false,
         error: 'There was an error while deleting the user from the database'
+      })
+    );
+});
+
+server.put('/api/users/:id', (req, res) => {
+  const { name, bio } = req.body;
+  const id = req.params.id;
+  const body = req.body;
+
+  if (!name || !bio) {
+    return res.status(400).json({
+      success: false,
+      errorMessage: 'Please provide name and bio for the user.'
+    });
+  }
+
+  db.update(id, body)
+    .then(user => {
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'The user with the specified ID does not exist.'
+        });
+      }
+      res.status(200).json({
+        success: true,
+        message: 'resource updated successfully',
+        user
+      });
+    })
+    .catch(err =>
+      res.status(500).json({
+        success: false,
+        error: 'There was an error while updating the user'
       })
     );
 });
