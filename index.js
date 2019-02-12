@@ -63,6 +63,29 @@ server.post('/api/users', (req, res) => {
   );
 });
 
+server.delete('/api/users/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.remove(id)
+    .then(user => {
+      if (!user) {
+        res.status(404).json({
+          success: false,
+          message: 'The user with the specified ID does not exist.'
+        });
+      }
+      res
+        .status(200)
+        .json({ success: true, message: 'resource updated successfully' });
+    })
+    .catch(err =>
+      res.status(500).json({
+        success: false,
+        error: 'There was an error while deleting the user from the database'
+      })
+    );
+});
+
 server.listen(4000, () => {
   console.log('working');
 });
