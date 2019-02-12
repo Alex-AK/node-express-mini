@@ -10,10 +10,34 @@ server.get('/api/users', (req, res) => {
     .then(users => {
       res.status(200).json({ success: true, users });
     })
-    .catch(err => ({
-      success: false,
-      error: 'The users information could not be retrieved.'
-    }));
+    .catch(err =>
+      res.status(500).json({
+        success: false,
+        error: 'The users information could not be retrieved.'
+      })
+    );
+});
+
+server.get('/api/users/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.findById(id)
+    .then(user => {
+      if (!user) {
+        res.status(404).json({
+          success: false,
+          error: 'The user information could not be retrieved.'
+        });
+      } else {
+        res.status(200).json({ success: true, user });
+      }
+    })
+    .catch(err =>
+      res.status(500).json({
+        success: false,
+        error: 'The users information could not be retrieved.'
+      })
+    );
 });
 
 server.post('/api/users', (req, res) => {
